@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import CourseCatalog from "./pages/CourseCatalog";
 import CourseOverview from "./pages/CourseOverview";
@@ -14,32 +15,70 @@ import AdaptiveLearning from "./pages/AdaptiveLearning";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import AdminPanel from "./pages/AdminPanel";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/courses" element={<ProtectedRoute><CourseCatalog /></ProtectedRoute>} />
+      <Route path="/course/:courseId" element={<ProtectedRoute><CourseOverview /></ProtectedRoute>} />
+      <Route path="/lesson/:courseId" element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
+      <Route path="/progress" element={<ProtectedRoute><ProgressReport /></ProtectedRoute>} />
+      <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+      <Route path="/quizzes" element={<ProtectedRoute><QuizzesAssessments /></ProtectedRoute>} />
+      <Route path="/adaptive" element={<ProtectedRoute><AdaptiveLearning /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/courses" element={<CourseCatalog />} />
-          <Route path="/course/:courseId" element={<CourseOverview />} />
-          <Route path="/lesson/:courseId" element={<LessonPage />} />
-          <Route path="/progress" element={<ProgressReport />} />
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/quizzes" element={<QuizzesAssessments />} />
-          <Route path="/adaptive" element={<AdaptiveLearning />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/settings" element={<Profile />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

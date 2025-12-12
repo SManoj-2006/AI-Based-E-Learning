@@ -24,12 +24,12 @@ export interface Badge {
 export interface Course {
   id: string;
   title: string;
-  description: string;
-  thumbnail: string;
+  description: string | null;
+  thumbnail: string | null;
   instructor: string;
   category: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  duration: string;
+  level: string;
+  duration: string | null;
   lessons: Lesson[];
   rating: number;
   enrolledCount: number;

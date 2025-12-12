@@ -1,27 +1,42 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/Sidebar';
 import { CourseCard } from '@/components/CourseCard';
-import { mockCourses, categories } from '@/data/mockData';
+import { useCourses, useEnrollments } from '@/hooks/useCourses';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+const categories = [
+  'All',
+  'Artificial Intelligence',
+  'Web Development',
+  'Data Science',
+  'Cloud Computing',
+  'Design',
+  'Security',
+];
+
 const CourseCatalog = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
+  const { data: courses, isLoading } = useCourses();
+  const { data: enrollments } = useEnrollments();
+
+  const enrolledCourseIds = enrollments?.map(e => e.course_id) || [];
   const levels = ['beginner', 'intermediate', 'advanced'];
 
-  const filteredCourses = mockCourses.filter(course => {
+  const filteredCourses = courses?.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          course.description.toLowerCase().includes(searchQuery.toLowerCase());
+                          (course.description?.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory;
     const matchesLevel = !selectedLevel || course.level === selectedLevel;
     return matchesSearch && matchesCategory && matchesLevel;
-  });
+  }) || [];
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -95,24 +110,44 @@ const CourseCatalog = () => {
 
           {/* Results */}
           <div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Showing {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''}
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <CourseCard key={course.id} course={course} />
-              ))}
-            </div>
-
-            {filteredCourses.length === 0 && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <h3 className="font-display font-semibold text-lg mb-2">No courses found</h3>
-                <p className="text-muted-foreground">Try adjusting your search or filters</p>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Showing {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''}
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCourses.map((course) => (
+                    <CourseCard 
+                      key={course.id} 
+                      course={{
+                        ...course,
+                        lessons: [],
+                        rating: course.rating || 0,
+                        enrolledCount: course.enrolled_count || 0,
+                        tags: course.tags || [],
+                        xpReward: course.xp_reward || 100,
+                      }}
+                      enrolled={enrolledCourseIds.includes(course.id)}
+                      onClick={() => navigate(`/course/${course.id}`)}
+                    />
+                  ))}
+                </div>
+
+                {filteredCourses.length === 0 && (
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+                      <Search className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="font-display font-semibold text-lg mb-2">No courses found</h3>
+                    <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

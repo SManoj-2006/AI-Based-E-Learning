@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { NavLink } from '@/components/NavLink';
 import { cn } from '@/lib/utils';
 import { 
@@ -12,10 +13,12 @@ import {
   ChevronLeft,
   HelpCircle,
   Brain,
-  Bell
+  Bell,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SidebarProps {
   isAdmin?: boolean;
@@ -23,6 +26,13 @@ interface SidebarProps {
 
 export function Sidebar({ isAdmin = false }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
 
   const learnerLinks = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -107,6 +117,18 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
           <Settings className="w-5 h-5 shrink-0" />
           {!collapsed && <span className="font-medium">Settings</span>}
         </NavLink>
+
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start text-sidebar-foreground/70 hover:bg-destructive/20 hover:text-destructive",
+            collapsed && "justify-center px-3"
+          )}
+          onClick={handleSignOut}
+        >
+          <LogOut className="w-5 h-5" />
+          {!collapsed && <span className="ml-3 font-medium">Sign Out</span>}
+        </Button>
         
         <Button
           variant="ghost"
