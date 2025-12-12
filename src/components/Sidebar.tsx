@@ -15,13 +15,11 @@ import {
   Brain,
   Bell,
   LogOut,
-  Glasses,
-  Shield
+  Glasses
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserRole } from '@/hooks/useUserRole';
 
 interface SidebarProps {
   isAdmin?: boolean;
@@ -30,7 +28,6 @@ interface SidebarProps {
 export function Sidebar({ isAdmin = false }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const { signOut } = useAuth();
-  const { isAdmin: userIsAdmin } = useUserRole();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -48,7 +45,6 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
     { to: '/progress', icon: BarChart3, label: 'Progress' },
     { to: '/achievements', icon: Users, label: 'Achievements' },
     { to: '/notifications', icon: Bell, label: 'Notifications' },
-    ...(userIsAdmin ? [{ to: '/admin', icon: Shield, label: 'Admin Panel' }] : []),
   ];
 
   const adminLinks = [
