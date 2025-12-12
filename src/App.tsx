@@ -17,6 +17,11 @@ import AdaptiveLearning from "./pages/AdaptiveLearning";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import AdminPanel from "./pages/AdminPanel";
+import AdminCourses from "./pages/admin/AdminCourses";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminInsights from "./pages/admin/AdminInsights";
+import AdminNotifications from "./pages/admin/AdminNotifications";
 import Auth from "./pages/Auth";
 import ARVRLabs from "./pages/ARVRLabs";
 import Leaderboard from "./pages/Leaderboard";
@@ -90,6 +95,11 @@ function AppRoutes() {
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+      <Route path="/admin/courses" element={<AdminRoute><AdminCourses /></AdminRoute>} />
+      <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+      <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+      <Route path="/admin/insights" element={<AdminRoute><AdminInsights /></AdminRoute>} />
+      <Route path="/admin/notifications" element={<AdminRoute><AdminNotifications /></AdminRoute>} />
       <Route path="/ar-vr" element={<ProtectedRoute><ARVRLabs /></ProtectedRoute>} />
       <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
