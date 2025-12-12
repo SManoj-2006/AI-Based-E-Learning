@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { useUserRole } from "./hooks/useUserRole";
 import Dashboard from "./pages/Dashboard";
 import CourseCatalog from "./pages/CourseCatalog";
 import CourseOverview from "./pages/CourseOverview";
@@ -41,6 +42,29 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const { isAdmin, isLoading: roleLoading } = useUserRole();
+  
+  if (isLoading || roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+}
+
 function AppRoutes() {
   const { user, isLoading } = useAuth();
   
@@ -65,7 +89,7 @@ function AppRoutes() {
       <Route path="/adaptive" element={<ProtectedRoute><AdaptiveLearning /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+      <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
       <Route path="/ar-vr" element={<ProtectedRoute><ARVRLabs /></ProtectedRoute>} />
       <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
