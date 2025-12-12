@@ -10,7 +10,9 @@ import {
   Users,
   Sparkles,
   ChevronLeft,
-  LogOut
+  HelpCircle,
+  Brain,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -25,8 +27,11 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
   const learnerLinks = [
     { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/courses', icon: BookOpen, label: 'Courses' },
+    { to: '/quizzes', icon: HelpCircle, label: 'Quizzes' },
+    { to: '/adaptive', icon: Brain, label: 'Adaptive Learning' },
     { to: '/progress', icon: BarChart3, label: 'Progress' },
     { to: '/achievements', icon: Trophy, label: 'Achievements' },
+    { to: '/notifications', icon: Bell, label: 'Notifications' },
   ];
 
   const adminLinks = [
@@ -43,7 +48,6 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
       "fixed left-0 top-0 h-screen gradient-dark border-r border-sidebar-border transition-all duration-300 z-40 flex flex-col",
       collapsed ? "w-16" : "w-64"
     )}>
-      {/* Logo */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center shrink-0">
@@ -58,8 +62,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-1 overflow-auto">
         {links.map((link) => (
           <NavLink
             key={link.to}
@@ -76,29 +79,22 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
         ))}
       </nav>
 
-      {/* AI Assistant Toggle */}
-      {!isAdmin && (
+      {!isAdmin && !collapsed && (
         <div className="p-3">
-          <div className={cn(
-            "rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 p-3 border border-primary/20",
-            collapsed && "p-2"
-          )}>
+          <div className="rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 p-3 border border-primary/20">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-primary-foreground" />
               </div>
-              {!collapsed && (
-                <div>
-                  <p className="text-sm font-medium text-sidebar-foreground">AI Tutor</p>
-                  <p className="text-xs text-sidebar-foreground/60">Get personalized help</p>
-                </div>
-              )}
+              <div>
+                <p className="text-sm font-medium text-sidebar-foreground">AI Tutor</p>
+                <p className="text-xs text-sidebar-foreground/60">Get personalized help</p>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Footer */}
       <div className="p-3 border-t border-sidebar-border space-y-1">
         <NavLink
           to="/settings"
@@ -106,6 +102,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-foreground",
             collapsed && "justify-center"
           )}
+          activeClassName="bg-sidebar-primary text-sidebar-primary-foreground"
         >
           <Settings className="w-5 h-5 shrink-0" />
           {!collapsed && <span className="font-medium">Settings</span>}
