@@ -41,8 +41,9 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
     { to: '/quizzes', icon: HelpCircle, label: 'Quizzes' },
     { to: '/adaptive', icon: Brain, label: 'Adaptive Learning' },
     { to: '/ar-vr', icon: Glasses, label: 'AR/VR Labs' },
+    { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
     { to: '/progress', icon: BarChart3, label: 'Progress' },
-    { to: '/achievements', icon: Trophy, label: 'Achievements' },
+    { to: '/achievements', icon: Users, label: 'Achievements' },
     { to: '/notifications', icon: Bell, label: 'Notifications' },
   ];
 
