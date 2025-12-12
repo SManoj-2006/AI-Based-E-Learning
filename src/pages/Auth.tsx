@@ -18,6 +18,15 @@ const Auth = () => {
   const [signupPassword, setSignupPassword] = useState('');
   const [signupName, setSignupName] = useState('');
 
+  const checkUserRole = async (userId: string) => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return data?.role;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
@@ -26,17 +35,25 @@ const Auth = () => {
     }
     
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: loginEmail,
       password: loginPassword,
     });
 
-    setIsLoading(false);
     if (error) {
+      setIsLoading(false);
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
     } else {
+      // Check if user is admin and redirect accordingly
+      const role = await checkUserRole(data.user.id);
+      setIsLoading(false);
       toast({ title: 'Welcome back!' });
-      navigate('/');
+      
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     }
   };
 
