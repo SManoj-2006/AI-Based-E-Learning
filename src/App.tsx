@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
 import ARVRLabs from "./pages/ARVRLabs";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ function AppRoutes() {
       <Route path="/settings" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
       <Route path="/ar-vr" element={<ProtectedRoute><ARVRLabs /></ProtectedRoute>} />
+      <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
