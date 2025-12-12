@@ -14,7 +14,8 @@ import {
   HelpCircle,
   Brain,
   Bell,
-  LogOut
+  LogOut,
+  Glasses
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -39,6 +40,7 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
     { to: '/courses', icon: BookOpen, label: 'Courses' },
     { to: '/quizzes', icon: HelpCircle, label: 'Quizzes' },
     { to: '/adaptive', icon: Brain, label: 'Adaptive Learning' },
+    { to: '/ar-vr', icon: Glasses, label: 'AR/VR Labs' },
     { to: '/progress', icon: BarChart3, label: 'Progress' },
     { to: '/achievements', icon: Trophy, label: 'Achievements' },
     { to: '/notifications', icon: Bell, label: 'Notifications' },
