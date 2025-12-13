@@ -371,38 +371,21 @@ export type Database = {
       }
     }
     Views: {
-      leaderboard_view: {
-        Row: {
-          avatar_url: string | null
-          full_name: string | null
-          id: string | null
-          level: number | null
-          streak: number | null
-          user_id: string | null
-          xp: number | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          full_name?: string | null
-          id?: string | null
-          level?: number | null
-          streak?: number | null
-          user_id?: string | null
-          xp?: number | null
-        }
-        Update: {
-          avatar_url?: string | null
-          full_name?: string | null
-          id?: string | null
-          level?: number | null
-          streak?: number | null
-          user_id?: string | null
-          xp?: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_leaderboard_profiles: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          full_name: string
+          id: string
+          level: number
+          streak: number
+          user_id: string
+          xp: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

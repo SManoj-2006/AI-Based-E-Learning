@@ -16,11 +16,8 @@ export function useLeaderboard() {
   const { data: profiles, isLoading: profilesLoading } = useQuery({
     queryKey: ["leaderboard-profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, user_id, full_name, avatar_url, xp, streak, level")
-        .order("xp", { ascending: false })
-        .limit(50);
+      // Use secure RPC function that only exposes limited profile fields for leaderboard
+      const { data, error } = await supabase.rpc("get_leaderboard_profiles");
 
       if (error) throw error;
       return data;
