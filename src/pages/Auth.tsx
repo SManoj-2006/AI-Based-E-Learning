@@ -8,6 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GraduationCap, Mail, Lock, User, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { z } from 'zod';
+
+// Validation schemas
+const loginSchema = z.object({
+  email: z.string().trim().email('Please enter a valid email address').max(255, 'Email is too long'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+const signupSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
+  email: z.string().trim().email('Please enter a valid email address').max(255, 'Email is too long'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -29,22 +46,25 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
-      toast({ title: 'Please fill in all fields', variant: 'destructive' });
+    
+    // Validate inputs
+    const validation = loginSchema.safeParse({ email: loginEmail, password: loginPassword });
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast({ title: 'Validation Error', description: firstError.message, variant: 'destructive' });
       return;
     }
     
     setIsLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
-      password: loginPassword,
+      email: validation.data.email,
+      password: validation.data.password,
     });
 
     if (error) {
       setIsLoading(false);
       toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
     } else {
-      // Check if user is admin and redirect accordingly
       const role = await checkUserRole(data.user.id);
       setIsLoading(false);
       toast({ title: 'Welcome back!' });
@@ -59,24 +79,27 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupEmail || !signupPassword || !signupName) {
-      toast({ title: 'Please fill in all fields', variant: 'destructive' });
-      return;
-    }
-
-    if (signupPassword.length < 6) {
-      toast({ title: 'Password must be at least 6 characters', variant: 'destructive' });
+    
+    // Validate inputs
+    const validation = signupSchema.safeParse({ 
+      name: signupName, 
+      email: signupEmail, 
+      password: signupPassword 
+    });
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast({ title: 'Validation Error', description: firstError.message, variant: 'destructive' });
       return;
     }
     
     setIsLoading(true);
     const { error } = await supabase.auth.signUp({
-      email: signupEmail,
-      password: signupPassword,
+      email: validation.data.email,
+      password: validation.data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/`,
         data: {
-          full_name: signupName,
+          full_name: validation.data.name,
         },
       },
     });
