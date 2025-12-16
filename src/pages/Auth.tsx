@@ -72,7 +72,7 @@ const Auth = () => {
       if (role === 'admin') {
         navigate('/admin');
       } else {
-        navigate('/');
+        navigate('/dashboard');
       }
     }
   };
@@ -113,7 +113,7 @@ const Auth = () => {
       }
     } else {
       toast({ title: 'Account created!', description: 'Welcome to LearnAI' });
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 

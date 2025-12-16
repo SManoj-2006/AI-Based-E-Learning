@@ -32,11 +32,11 @@ export function Sidebar({ isAdmin = false }: SidebarProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/auth');
+    navigate('/');
   };
 
   const learnerLinks = [
-    { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/courses', icon: BookOpen, label: 'Courses' },
     { to: '/quizzes', icon: HelpCircle, label: 'Quizzes' },
     { to: '/adaptive', icon: Brain, label: 'Adaptive Learning' },

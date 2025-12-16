@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { useUserRole } from "./hooks/useUserRole";
+import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import CourseCatalog from "./pages/CourseCatalog";
 import CourseOverview from "./pages/CourseOverview";
@@ -41,7 +42,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/" replace />;
   }
   
   return <>{children}</>;
@@ -60,11 +61,11 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/" replace />;
   }
   
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return <>{children}</>;
@@ -83,8 +84,9 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
-      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/" element={<Index />} />
+      <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <Auth />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/courses" element={<ProtectedRoute><CourseCatalog /></ProtectedRoute>} />
       <Route path="/course/:courseId" element={<ProtectedRoute><CourseOverview /></ProtectedRoute>} />
       <Route path="/lesson/:courseId" element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
